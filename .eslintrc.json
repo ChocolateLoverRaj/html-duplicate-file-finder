@@ -1,0 +1,8 @@
+{
+  "root": true,
+  "extends": "standard-with-typescript",
+  "ignorePatterns": "next-env.d.ts",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  }
+}
