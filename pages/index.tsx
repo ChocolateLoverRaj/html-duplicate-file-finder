@@ -1,5 +1,4 @@
 import { FC } from 'react'
-import Head from 'next/head'
 import { GetStaticProps } from 'next'
 import ReactMarkdown from 'react-markdown'
 import { resolve } from 'path'
@@ -12,14 +11,7 @@ interface Props {
 const IndexPage: FC<Props> = props => {
   const { md } = props
 
-  return (
-    <>
-      <Head>
-        <title>Duplicate File Finder</title>
-      </Head>
-      <ReactMarkdown>{md}</ReactMarkdown>
-    </>
-  )
+  return <ReactMarkdown>{md}</ReactMarkdown>
 }
 
 export default IndexPage
