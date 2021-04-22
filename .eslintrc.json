@@ -2,6 +2,15 @@
   "root": true,
   "extends": "standard-with-typescript",
   "ignorePatterns": "next-env.d.ts",
+  "rules": {
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "maxBOF": 0,
+        "max": 1
+      }
+    ]
+  },
   "parserOptions": {
     "project": "./tsconfig.json"
   }
