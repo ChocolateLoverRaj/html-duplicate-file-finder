@@ -7,8 +7,8 @@ export type Value = FileSystemDirectoryHandle | undefined
 export type DirInputOnChange = (handle: Value) => void
 
 interface Props {
-  value: Value
-  onChange: DirInputOnChange
+  value?: Value
+  onChange?: DirInputOnChange
 }
 
 const DirInput: FC<Props> = props => {
@@ -17,7 +17,7 @@ const DirInput: FC<Props> = props => {
   const handleClick: MouseEventHandler<HTMLInputElement> = () => {
     showDirectoryPicker()
       .then(handle => {
-        onChange(handle)
+        onChange?.(handle)
       })
       .catch(e => {
         if (e.code !== 20) alert('Error picking directory')
