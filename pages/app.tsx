@@ -1,10 +1,13 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
+import DirInput from '../components/DirInput'
 import NeedsFileAccessApi from '../components/NeedsFileAccessApi'
 
 const AppPage: FC = () => {
+  const [handle, setHandle] = useState<FileSystemDirectoryHandle>()
+
   return (
     <NeedsFileAccessApi>
-      Coming soon
+      <DirInput value={handle} onChange={setHandle} />
     </NeedsFileAccessApi>
   )
 }
