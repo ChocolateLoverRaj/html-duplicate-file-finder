@@ -1,11 +1,15 @@
+import { CheckOutlined, DeleteOutlined, LoadingOutlined } from '@ant-design/icons'
 import { Button, Card, Form, Popconfirm, Progress, Table } from 'antd'
-import { FC, MouseEventHandler, useState } from 'react'
+import { FC, useState } from 'react'
 import DirInput from '../components/DirInput'
 import NeedsFileAccessApi from '../components/NeedsFileAccessApi'
 
 interface Scan {
   id: number
   dir: FileSystemDirectoryHandle
+  totalFiles: number
+  filesChecked: number
+  discoveredFiles: boolean
 }
 
 const AppPage: FC = () => {
@@ -17,7 +21,10 @@ const AppPage: FC = () => {
       ...scans,
       {
         id: nextScanId,
-        dir
+        dir,
+        totalFiles: 0,
+        filesChecked: 0,
+        discoveredFiles: false
       }
     ])
     setNextScanId(nextScanId + 1)
@@ -47,6 +54,20 @@ const AppPage: FC = () => {
             width: '100%'
           },
           {
+            title: 'Files Checked',
+            render: (_value, scan) => scan.filesChecked
+          },
+          {
+            title: 'Total Files',
+            render: (_value, scan) => scan.totalFiles
+          },
+          {
+            title: 'Discovered Files',
+            render: (_value, scan) => scan.discoveredFiles
+              ? <CheckOutlined />
+              : <LoadingOutlined />
+          },
+          {
             title: 'Actions',
             render: (_value, _record, index) => {
               const handleClick = (): void => {
@@ -63,7 +84,7 @@ const AppPage: FC = () => {
                   cancelText='No'
                   onConfirm={handleClick}
                 >
-                  <Button danger>Cancel Scan</Button>
+                  <DeleteOutlined />
                 </Popconfirm>
               )
             }
@@ -71,6 +92,7 @@ const AppPage: FC = () => {
         ]}
         dataSource={scans}
         pagination={{ hideOnSinglePage: true }}
+        rowKey='id'
       />
     </NeedsFileAccessApi>
   )
