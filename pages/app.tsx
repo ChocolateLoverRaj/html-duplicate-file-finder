@@ -3,14 +3,8 @@ import { Button, Card, Form, Popconfirm, Progress, Table } from 'antd'
 import { FC, useState } from 'react'
 import DirInput from '../components/DirInput'
 import NeedsFileAccessApi from '../components/NeedsFileAccessApi'
-
-interface Scan {
-  id: number
-  dir: FileSystemDirectoryHandle
-  totalFiles: number
-  filesChecked: number
-  discoveredFiles: boolean
-}
+import ProcessScans from '../components/process-scans'
+import { Scan } from '../lib/Scan'
 
 const AppPage: FC = () => {
   const [scans, setScans] = useState<Scan[]>([])
@@ -94,6 +88,7 @@ const AppPage: FC = () => {
         pagination={{ hideOnSinglePage: true }}
         rowKey='id'
       />
+      <ProcessScans scans={scans} setScans={setScans} />
     </NeedsFileAccessApi>
   )
 }

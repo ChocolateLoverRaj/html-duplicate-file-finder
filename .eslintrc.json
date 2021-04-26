@@ -2,6 +2,9 @@
   "root": true,
   "extends": "standard-with-typescript",
   "ignorePatterns": "next-env.d.ts",
+  "plugins": [
+    "react-hooks"
+  ],
   "rules": {
     "no-multiple-empty-lines": [
       "error",
@@ -9,7 +12,9 @@
         "maxBOF": 0,
         "max": 1
       }
-    ]
+    ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "error"
   },
   "parserOptions": {
     "project": "./tsconfig.json"
