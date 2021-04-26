@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
 import { OnChange } from '../../lib/OnChange'
 import { Scan } from '../../lib/Scan'
 
@@ -13,6 +13,8 @@ interface EntriesPromise {
   nextPromise: Promise<IteratorResult<[string, FileSystemHandle]>>
 }
 
+type IncTotalFiles = (n: number) => void
+
 const ProcessScan: FC<Props> = props => {
   const { scan, setScan } = props
   const { dir } = scan
@@ -25,6 +27,14 @@ const ProcessScan: FC<Props> = props => {
       nextPromise: iterator.next()
     }]
   })
+
+  const incTotalFiles = useRef<IncTotalFiles>()
+  incTotalFiles.current = n => {
+    setScan({
+      ...scan,
+      totalFiles: scan.totalFiles + n
+    })
+  }
 
   useEffect(() => {
     let canceled = false
@@ -55,13 +65,7 @@ const ProcessScan: FC<Props> = props => {
         .then(() => {
           if (canceled) return
           setEntriesPromises(newEntriesPromises.flat(0))
-          console.log(scan.totalFiles, filesDiscovered)
-          if (filesDiscovered > 0) {
-            setScan({
-              ...scan,
-              totalFiles: scan.totalFiles + filesDiscovered
-            })
-          }
+          incTotalFiles.current?.(filesDiscovered)
         })
         .catch(e => {
           console.error(e)
@@ -69,10 +73,9 @@ const ProcessScan: FC<Props> = props => {
         })
     }
     return () => {
-      console.log('canceled')
       canceled = true
     }
-  }, [entriesPromises, scan, setEntriesPromises, setScan])
+  }, [entriesPromises, setEntriesPromises])
 
   return null
 }
