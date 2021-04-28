@@ -1,13 +1,14 @@
 import { CheckOutlined, DeleteOutlined, LoadingOutlined } from '@ant-design/icons'
 import { Button, Card, Form, Popconfirm, Progress, Table } from 'antd'
 import { FC, useState } from 'react'
+import useBatchedState from 'react-use-batched-state'
 import DirInput from '../components/DirInput'
 import NeedsFileAccessApi from '../components/NeedsFileAccessApi'
 import ProcessScans from '../components/process-scans'
 import { Scan } from '../lib/Scan'
 
 const AppPage: FC = () => {
-  const [scans, setScans] = useState<Scan[]>([])
+  const [scans, setScans] = useBatchedState<Scan[]>([])
   const [nextScanId, setNextScanId] = useState(0)
 
   const onFinish = ({ dir }: { dir: FileSystemDirectoryHandle }): void => {

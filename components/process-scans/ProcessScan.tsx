@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useEffect, useRef, useState } from 'react'
+import { Dispatch, FC, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 import { OnChange } from '../../lib/OnChange'
 import { Scan } from '../../lib/Scan'
 import sha1 from 'js-sha1'
@@ -37,8 +37,6 @@ interface Hashes {
   [hash: string]: string[]
 }
 
-type IncTotalFiles = (n: number) => void
-
 const getAddTo = <T extends unknown>(currentItems: T[], setArr: Dispatch<SetStateAction<T[]>>): AddTo<T> => additionalItems => {
   setArr([...currentItems, ...additionalItems])
 }
@@ -56,13 +54,25 @@ const ProcessScan: FC<Props> = props => {
     }]
   })
 
-  const incTotalFiles = useRef<IncTotalFiles>()
-  incTotalFiles.current = n => {
-    setScan({
-      ...scan,
-      totalFiles: scan.totalFiles + n
+  const scanRef = useRef(scan)
+  scanRef.current = scan
+
+  const setScanRef = useRef(setScan)
+  setScanRef.current = setScan
+
+  const incTotalFiles = useCallback((n: number) => {
+    setScanRef.current({
+      ...scanRef.current,
+      totalFiles: scanRef.current.totalFiles + n
     })
-  }
+  }, [])
+
+  const incFilesChecked = useCallback(() => {
+    setScanRef.current({
+      ...scanRef.current,
+      filesChecked: scanRef.current.filesChecked + 1
+    })
+  }, [])
 
   const [handlesToFiles, setHandlesToFiles] = useState<HandleToFile[]>([])
   const addHandlesToFiles = useRef<AddTo<HandleToFile>>()
@@ -106,7 +116,7 @@ const ProcessScan: FC<Props> = props => {
           if (canceled) return
           setEntriesPromises(newEntriesPromises.flat(0))
           addHandlesToFiles.current?.(additionalFilesToHash)
-          incTotalFiles.current?.(filesDiscovered)
+          incTotalFiles(filesDiscovered)
         })
         .catch(e => {
           console.error(e)
@@ -116,7 +126,7 @@ const ProcessScan: FC<Props> = props => {
     return () => {
       canceled = true
     }
-  }, [entriesPromises, setEntriesPromises])
+  }, [entriesPromises, incTotalFiles, setEntriesPromises])
 
   const [filesToArrayBuffers, setFilesToArrayBuffers] = useBatchedState<FileToArrayBuffer[]>([])
   const addFilesToArrayBuffers = useRef<AddTo<FileToArrayBuffer>>()
@@ -173,6 +183,7 @@ const ProcessScan: FC<Props> = props => {
           })
           setFilesToArrayBuffers(newFilesToArrayBuffers.flat(0))
           setHashes(newHashes)
+          incFilesChecked()
         })
         .catch(() => {
           alert('Error')
@@ -181,7 +192,17 @@ const ProcessScan: FC<Props> = props => {
         canceled = true
       }
     }
-  }, [filesToArrayBuffers, hashes, setFilesToArrayBuffers, setHashes])
+  }, [filesToArrayBuffers, hashes, incFilesChecked, setFilesToArrayBuffers, setHashes])
+
+  // See if done
+  useEffect(() => {
+    if (handlesToFiles.length === 0 && filesToArrayBuffers.length === 0) {
+      setScanRef.current({
+        ...scanRef.current,
+        discoveredFiles: true
+      })
+    }
+  }, [filesToArrayBuffers.length, handlesToFiles.length])
 
   useEffect(() => {
     console.log(hashes)
