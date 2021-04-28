@@ -1,4 +1,4 @@
-import { PageHeader, Statistic, Tag } from 'antd'
+import { Col, PageHeader, Row, Statistic, Tag } from 'antd'
 import { FC, MouseEventHandler } from 'react'
 import { Scan } from '../lib/Scan'
 
@@ -18,7 +18,14 @@ const ScanPage: FC<Props> = props => {
         onBack={onBack}
         tags={scan.discoveredFiles ? <Tag color='green'>Finished</Tag> : <Tag color='blue'>Running</Tag>}
       />
-      <Statistic title='Files Checked' value={scan.filesChecked} />
+      <Row>
+        <Col span={12}>
+          <Statistic title='Files Checked' value={scan.filesChecked} />
+        </Col>
+        <Col span={12}>
+          <Statistic title='Total Files' value={scan.totalFiles} />
+        </Col>
+      </Row>
     </>
   )
 }
