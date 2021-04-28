@@ -1,16 +1,17 @@
 import { CheckOutlined, DeleteOutlined, LoadingOutlined } from '@ant-design/icons'
-import { Button, Card, Form, Popconfirm, Table, PageHeader } from 'antd'
+import { Button, Card, Form, Popconfirm, Table } from 'antd'
 import { FC, MouseEventHandler, useState } from 'react'
 import useBatchedState from 'react-use-batched-state'
 import DirInput from '../components/DirInput'
 import NeedsFileAccessApi from '../components/NeedsFileAccessApi'
 import ProcessScans from '../components/process-scans'
+import ScanPage from '../components/ScanPage'
 import { Scan } from '../lib/Scan'
 
 const AppPage: FC = () => {
   const [scans, setScans] = useBatchedState<Scan[]>([])
   const [nextScanId, setNextScanId] = useState(0)
-  const [scan, setScan] = useState<number>()
+  const [viewingScan, setViewingScan] = useState<number>()
 
   const onFinish = ({ dir }: { dir: FileSystemDirectoryHandle }): void => {
     setScans([
@@ -27,17 +28,13 @@ const AppPage: FC = () => {
   }
 
   const handleBack: MouseEventHandler<HTMLDivElement> = () => {
-    setScan(undefined)
+    setViewingScan(undefined)
   }
 
   return (
     <NeedsFileAccessApi>
-      {scan !== undefined
-        ? (
-          <>
-            <PageHeader title={`Scan ${scan}`} onBack={handleBack}/>
-          </>
-          )
+      {viewingScan !== undefined
+        ? <ScanPage scan={scans[viewingScan]} onBack={handleBack} name={viewingScan} />
         : (
           <>
             <Card title='Create Scan'>
@@ -98,7 +95,7 @@ const AppPage: FC = () => {
               rowKey='id'
               onRow={(_scan, index) => ({
                 onClick: () => {
-                  setScan(index)
+                  setViewingScan(index)
                 }
               })}
             />
